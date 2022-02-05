@@ -1,21 +1,40 @@
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public class Repeat {
     public int find(String s) {
-        HashMap<String, String> map = new HashMap<String, String>();
+        ArrayList<String> listOfWords = new ArrayList<>();
+        int stringLength = s.length();
         int count = 0;
 
         for (int i = 0; i < s.length(); i++) {
             String currentChar = String.valueOf(s.charAt(i));
-            String found = map.get(currentChar);
-            if (found == null) {
-                map.put(currentChar, currentChar);
-                count++;
+
+            if (i > 0) {
+                String lastWord = listOfWords.get(i - 1);
+                listOfWords.add(lastWord + currentChar);
+            } else {
+                listOfWords.add(currentChar);
             }
         }
-        return count;
+// List of words that are dividable by original string
+        List<String> filtered = listOfWords.stream().filter(word -> s.length() % word.length() == 0).collect(Collectors.toList());
+
+        int lengthOfRepeatedWord = 0;
+
+        for (int i = filtered.size() - 1; i >= 0; i--) {
+            String currentWord = filtered.get(i);
+            String repeatedWord = currentWord.repeat(stringLength / currentWord.length());
+
+            if (repeatedWord.equals(s)) {
+                lengthOfRepeatedWord = currentWord.length();
+            }
+        }
+
+        return lengthOfRepeatedWord;
     }
+
 
     public static void main(String[] args) {
         Repeat r = new Repeat();
